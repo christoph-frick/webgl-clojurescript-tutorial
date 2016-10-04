@@ -20,13 +20,14 @@
 
 (def shader-spec
   {:vs "void main() {
-       gl_Position = proj * view * vec4 (position, 1.0);
+       gl_Position = proj * view * model * vec4 (position, 1.0);
        }"
    :fs "void main() {
        gl_FragColor = vec4(0.5,0.5,1.0,1.0);
        }"
    :uniforms {:view :mat4
-              :proj :mat4}
+              :proj :mat4
+              :model :mat4}
    :attribs {:position :vec3}})
 
 (defonce camera (cam/perspective-camera {}))
@@ -41,10 +42,16 @@
       (gl/make-buffers-in-spec gl-ctx glc/static-draw)
       (cam/apply camera)))
 
+#_(println (combine-model-shader-camera triangle shader-spec camera))
+
+(defn spin [t]
+  (geom/rotate-z mat/M44 (/ t 5)))
+
 (defn draw-frame [t]
   (doto gl-ctx
-    (gl/clear-color-and-depth-buffer 0 (mod t 1) 0 1 1)
-    (gl/draw-with-shader (combine-model-shader-camera triangle shader-spec camera))))
+    (gl/clear-color-and-depth-buffer 0 0 0 1 1)
+    (gl/draw-with-shader (assoc-in (combine-model-shader-camera triangle shader-spec camera)
+                                   [:uniforms :model] (spin t)))))
 
 (defonce running
   (anim/animate
