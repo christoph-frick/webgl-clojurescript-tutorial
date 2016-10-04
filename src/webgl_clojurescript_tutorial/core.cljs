@@ -1,4 +1,5 @@
 (ns webgl-clojurescript-tutorial.core
+  (:require-macros [webgl-clojurescript-tutorial.macros :as macros])
   (:require [thi.ng.geom.gl.core :as gl]
             [thi.ng.geom.gl.webgl.constants :as glc]
             [thi.ng.geom.matrix :as mat]
@@ -19,12 +20,8 @@
                 {:mesh (glmesh/gl-mesh 3)}))
 
 (def shader-spec
-  {:vs "void main() {
-       gl_Position = proj * view * model * vec4 (position, 1.0);
-       }"
-   :fs "void main() {
-       gl_FragColor = vec4(0.5,0.5,1.0,1.0);
-       }"
+  {:vs (macros/resource "shader.vert")
+   :fs (macros/resource "shader.frag")
    :uniforms {:view :mat4
               :proj :mat4
               :model :mat4}
