@@ -7,7 +7,8 @@
             [thi.ng.geom.gl.shaders :as shaders]
             [thi.ng.geom.gl.camera :as cam]
             [thi.ng.geom.triangle :as tri]
-            [thi.ng.geom.sphere :as sph]))
+            [thi.ng.geom.sphere :as sph]
+            [thi.ng.geom.gl.webgl.animator :as anim]))
 
 (enable-console-print!)
 
@@ -40,9 +41,16 @@
       (gl/make-buffers-in-spec gl-ctx glc/static-draw)
       (cam/apply camera)))
 
-(doto gl-ctx
-  (gl/clear-color-and-depth-buffer 0 0 0 1 1)
-  (gl/draw-with-shader (combine-model-shader-camera triangle shader-spec camera)))
+(defn draw-frame [t]
+  (doto gl-ctx
+    (gl/clear-color-and-depth-buffer 0 (mod t 1) 0 1 1)
+    (gl/draw-with-shader (combine-model-shader-camera triangle shader-spec camera))))
+
+(defonce running
+  (anim/animate
+    (fn [t]
+      (draw-frame t)
+      true)))
 
 (defn on-js-reload []
   ;; optionally touch your app-state to force rerendering depending on
