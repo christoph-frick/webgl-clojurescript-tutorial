@@ -1,13 +1,12 @@
 (ns webgl-clojurescript-tutorial.core
-  (:require ))
+  (:require [thi.ng.geom.gl.core :as gl]))
 
 (enable-console-print!)
 
-(println "This text is printed from src/webgl-clojurescript-tutorial/core.cljs. Go ahead and edit it and see reloading in action.")
+(defonce gl-ctx (gl/gl-context "main"))
 
-;; define your app data so that it doesn't get over-written on reload
-
-(defonce app-state (atom {:text "Hello world!"}))
+(doto gl-ctx
+  (gl/clear-color-and-depth-buffer 0 0 0 1 1))
 
 (defn on-js-reload []
   ;; optionally touch your app-state to force rerendering depending on
